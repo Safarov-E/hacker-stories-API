@@ -34,7 +34,7 @@ export default class extends Component {
   onDismiss = (id) => {
     const updatedHits = this.state.result.hits.filter(item => item.objectID !== id)
     this.setState({
-      result: Object.assign({}, this.state.result, {hits: updatedHits})
+      result: {...this.state.result, hits: updatedHits}
     })
   }
   onSearchChange = (event) => {
@@ -52,12 +52,16 @@ export default class extends Component {
           >
             Поиск
           </Search>
-          <Table 
+        </div>
+        {
+          result
+          ? <Table 
             list={result.hits}
             pattern={searchTerm}
             onDismiss={this.onDismiss}
           />
-        </div>
+          : null
+        }
       </div>
     )
   }
