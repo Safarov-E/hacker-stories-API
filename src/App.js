@@ -32,8 +32,10 @@ export default class extends Component {
       .catch(error => error)
   }
   onDismiss = (id) => {
-    const updatedList = this.state.list.filter(item => item.objectID !== id)
-    this.setState({list: updatedList})
+    const updatedHits = this.state.result.hits.filter(item => item.objectID !== id)
+    this.setState({
+      result: Object.assign({}, this.state.result, {hits: updatedHits})
+    })
   }
   onSearchChange = (event) => {
     this.setState({ searchTerm: event.target.value })
