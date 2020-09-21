@@ -7,12 +7,6 @@ const PATH_BASE = 'https://hn.algolia.com/api/v1';
 const PATH_SEARCH = '/search';
 const PARAM_SEARCH = 'query=';
 
-function isSearched(searchTerm) {
-  return (item)  => {
-    return item.title.toLowerCase().includes(searchTerm.toLowerCase())
-  }
-}
-
 export default class extends Component {
   constructor(props) {
     super(props)
@@ -21,15 +15,23 @@ export default class extends Component {
       searchTerm: DEFAULT_QUERY
     }
   }
+  onSearchSubmit = (event) => {
+    const { searchTerm } = this.state
+    this.fetchSearchTopStories(searchTerm)
+    event.preventDefault();
+  }
   setSearchTopStories(result) {
     this.setState({result})
   }
-  componentDidMount() {
-    const {searchTerm} = this.state;
+  fetchSearchTopStories(searchTerm) {
     fetch(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}`)
       .then(response => response.json())
       .then(result => this.setSearchTopStories(result))
       .catch(error => error)
+  }
+  componentDidMount() {
+    const {searchTerm} = this.state;
+    this.fetchSearchTopStories(searchTerm)
   }
   onDismiss = (id) => {
     const updatedHits = this.state.result.hits.filter(item => item.objectID !== id)
@@ -44,41 +46,43 @@ export default class extends Component {
     const { searchTerm, result } = this.state;
     if(!result) {return null}
     return (
-      <div className="App">
+      <div className="page">
         <div className="interactions">
           <Search 
             value={searchTerm}
             onChange={this.onSearchChange}
+            onSubmit={this.onSearchSubmit}
           >
             Поиск
           </Search>
         </div>
         {
-          result
-          ? <Table 
+          result &&
+          <Table 
             list={result.hits}
-            pattern={searchTerm}
             onDismiss={this.onDismiss}
           />
-          : null
         }
       </div>
     )
   }
 }
 
-const Search = ({value, onChange, children}) =>
-  <form>
-    {children} <input 
+const Search = ({value, onChange, onSubmit, children}) =>
+  <form onSubmit={onSubmit}>
+    <input 
       type="text" 
       value={value}
       onChange={onChange}  
     />
+    <button type="submit">
+      {children}
+    </button>
   </form>
 
-const Table = ({list, pattern, onDismiss}) =>
+const Table = ({list, onDismiss}) =>
   <div className="table">
-    {list.filter(isSearched(pattern)).map((item) => {
+    {list.map((item) => {
       return (
         <div key={item.objectID} className="table-row">
           <span style={{ width: '40%' }}>
