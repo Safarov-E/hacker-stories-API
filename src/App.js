@@ -16,16 +16,17 @@ export default class extends Component {
     this.state = {
       results: null,
       searchKey: '',
-      searchTerm: DEFAULT_QUERY
+      searchTerm: DEFAULT_QUERY,
+      error: null
     }
   }
-  needsToSearchTopStories(searchTerm) {
+  needsToSearchTopStories = (searchTerm) => {
     return !this.state.results[searchTerm]
   }
   onSearchSubmit = (event) => {
     const { searchTerm } = this.state
     this.setState({ searchKey: searchTerm })
-    if(this.fetchSearchTopStories(searchTerm)) {
+    if(this.needsToSearchTopStories(searchTerm)) {
       this.fetchSearchTopStories(searchTerm)
     }
     event.preventDefault();
@@ -51,7 +52,7 @@ export default class extends Component {
     fetch(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}&${PARAM_PAGE}${page}&${PARAM_HPP}${DEFAULT_HPP}`)
       .then(response => response.json())
       .then(result => this.setSearchTopStories(result))
-      .catch(error => error)
+      .catch(error => this.setState({error}))
   }
   componentDidMount() {
     const {searchTerm} = this.state;
@@ -77,7 +78,8 @@ export default class extends Component {
     const { 
       searchTerm, 
       results, 
-      searchKey 
+      searchKey,
+      error
     } = this.state;
     const page = (
       results && 
@@ -89,6 +91,9 @@ export default class extends Component {
       results[searchKey] &&
       results[searchKey].hits
     ) || []
+    if(error) {
+      return <p>Что-то произошло не так.</p>
+    }
     return (
       <div className="page">
         <div className="interactions">
@@ -100,10 +105,15 @@ export default class extends Component {
             Поиск
           </Search>
         </div>
-        <Table 
-          list={list}
-          onDismiss={this.onDismiss}
-        />
+        { error
+          ? <div className="interactions">
+              <p>Something went wrong.</p>
+          </div>
+          : <Table 
+            list={list}
+            onDismiss={this.onDismiss}
+          />
+        }
         <div className="interactions">
           <Button onClick={() => this.fetchSearchTopStories(searchTerm, page + 1)}>
             Больше историй
