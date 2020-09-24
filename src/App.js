@@ -33,7 +33,7 @@ export default class extends Component {
     }
     event.preventDefault();
   }
-  setSearchTopStories(result) {
+  setSearchTopStories = (result) => {
     const { hits, page } = result;
     const { searchKey, results } = this.state
     const oldHits = results && results[searchKey]
@@ -44,7 +44,7 @@ export default class extends Component {
       ...hits
     ]
     this.setState({
-      result: {
+      results: {
         ...results,
         [searchKey]: { hits: updatedHits, page}
       }
