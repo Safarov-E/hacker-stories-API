@@ -1,4 +1,7 @@
 import React, {Component} from 'react';
+import Search from '../search'
+import Table from '../table'
+import Button from '../button'
 import axios from 'axios';
 import './App.css';
 
@@ -128,48 +131,3 @@ export default class extends Component {
     )
   }
 }
-
-const Search = ({value, onChange, onSubmit, children}) =>
-  <form onSubmit={onSubmit}>
-    <input 
-      type="text" 
-      value={value}
-      onChange={onChange}  
-    />
-    <button type="submit">
-      {children}
-    </button>
-  </form>
-
-const Table = ({list, onDismiss}) =>
-  <div className="table">
-    {list.map((item) => {
-      return (
-        <div key={item.objectID} className="table-row">
-          <span style={{ width: '40%' }}>
-            <a href={item.url}>{item.title} </a>
-          </span>
-          <span style={{ width: '30%' }}>{item.author} </span>
-          <span style={{ width: '10%' }}>{item.num_comments}</span>
-          <span style={{ width: '10%' }}>{item.points}</span>
-          <span>
-            <Button 
-              onClick={() => onDismiss(item.objectID)}
-              className="button-inline"
-            >
-              Отбросить
-            </Button>
-          </span>
-        </div>
-      )
-    })}
-  </div>
-  
-const Button = ({onClick, className = '', children}) =>
-  <button
-    onClick={onClick}
-    className={className}
-    type="button"
-  >
-    {children}
-  </button>
