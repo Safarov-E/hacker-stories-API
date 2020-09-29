@@ -131,3 +131,9 @@ export default class extends Component {
     )
   }
 }
+
+export {
+  Button,
+  Search,
+  Table
+}
