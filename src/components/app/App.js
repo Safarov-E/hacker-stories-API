@@ -3,6 +3,7 @@ import Search from '../search'
 import Table from '../table'
 import Button from '../button'
 import axios from 'axios';
+import PropTypes from 'prop-types'
 import './App.css';
 import {
   DEFAULT_QUERY,
