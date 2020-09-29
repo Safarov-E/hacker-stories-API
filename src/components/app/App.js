@@ -2,8 +2,8 @@ import React, {Component} from 'react';
 import Search from '../search'
 import Table from '../table'
 import Button from '../button'
+import Loading from '../loading'
 import axios from 'axios';
-import PropTypes from 'prop-types'
 import './App.css';
 import {
   DEFAULT_QUERY,
@@ -23,7 +23,8 @@ export default class extends Component {
       results: null,
       searchKey: '',
       searchTerm: DEFAULT_QUERY,
-      error: null
+      error: null,
+      isLoading: false
     }
   }
   needsToSearchTopStories = (searchTerm) => {
@@ -51,10 +52,12 @@ export default class extends Component {
       results: {
         ...results,
         [searchKey]: { hits: updatedHits, page}
-      }
+      },
+      isLoading: false
     })
   }
   fetchSearchTopStories(searchTerm, page = 0) {
+    this.setState({isLoading: true})
     axios(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}&${PARAM_PAGE}${page}&${PARAM_HPP}${DEFAULT_HPP}`)
       .then(result => this._isMounted && this.setSearchTopStories(result.data))
       .catch(error => this._isMounted && this.setState({error}))
@@ -88,7 +91,8 @@ export default class extends Component {
       searchTerm, 
       results, 
       searchKey,
-      error
+      error,
+      isLoading
     } = this.state;
     const page = (
       results && 
@@ -124,9 +128,13 @@ export default class extends Component {
           />
         }
         <div className="interactions">
-          <Button onClick={() => this.fetchSearchTopStories(searchTerm, page + 1)}>
-            Больше историй
-          </Button>
+          {
+            isLoading
+            ? <Loading />
+            : <Button onClick={() => this.fetchSearchTopStories(searchTerm, page + 1)}>
+                Больше историй
+              </Button>
+          }
         </div>
       </div>
     )
