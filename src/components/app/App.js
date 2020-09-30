@@ -14,6 +14,7 @@ import {
   PARAM_PAGE,
   PARAM_HPP
 } from '../../constants'
+import { func } from 'prop-types';
 
 export default class extends Component {
   _isMounted = false
@@ -128,19 +129,24 @@ export default class extends Component {
           />
         }
         <div className="interactions">
-          {
-            isLoading
-            ? <Loading />
-            : <Button onClick={() => this.fetchSearchTopStories(searchTerm, page + 1)}>
-                Больше историй
-              </Button>
-          }
+          <ButtonWithLoading
+            isLoading={isLoading}
+            onClick={() => this.fetchSearchTopStories(searchKey, page + 1)}
+          >
+            Больше историй
+          </ButtonWithLoading>
         </div>
       </div>
     )
   }
 }
 
+const withLoading = (Component) => ({isLoading, ...rest}) =>
+  isLoading
+    ? <Loading />
+    : <Component {...rest} />
+
+const ButtonWithLoading = withLoading(Button)
 export {
   Button,
   Search,
