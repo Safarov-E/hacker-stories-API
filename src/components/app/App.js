@@ -3,7 +3,8 @@ import Search from '../search'
 import Table from '../table'
 import Button from '../button'
 import Loading from '../loading'
-import axios from 'axios';
+import classNames from 'classnames'
+import axios from 'axios'
 import './App.css';
 import {
   DEFAULT_QUERY,
@@ -14,7 +15,6 @@ import {
   PARAM_PAGE,
   PARAM_HPP
 } from '../../constants'
-import { func } from 'prop-types';
 
 export default class extends Component {
   _isMounted = false
@@ -25,8 +25,14 @@ export default class extends Component {
       searchKey: '',
       searchTerm: DEFAULT_QUERY,
       error: null,
-      isLoading: false
+      isLoading: false,
+      sortKey: 'NONE',
+      isSortReverse: false
     }
+  }
+  onSort = (sortKey) => {
+    const isSortReverse = this.state.sortKey === sortKey && !this.state.isSortReverse
+    this.setState({ sortKey, isSortReverse })
   }
   needsToSearchTopStories = (searchTerm) => {
     return !this.state.results[searchTerm]
@@ -93,7 +99,9 @@ export default class extends Component {
       results, 
       searchKey,
       error,
-      isLoading
+      isLoading,
+      sortKey,
+      isSortReverse
     } = this.state;
     const page = (
       results && 
@@ -125,6 +133,9 @@ export default class extends Component {
           </div>
           : <Table 
             list={list}
+            sortKey={sortKey}
+            isSortReverse={isSortReverse}
+            onSort={this.onSort}
             onDismiss={this.onDismiss}
           />
         }
