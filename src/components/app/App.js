@@ -15,6 +15,23 @@ import {
   PARAM_HPP
 } from '../../constants'
 
+const updateSearchTopStoriesState = (hits, page) => (prevState) => {
+  const { searchKey, results } = prevState;
+  const oldHits = results && results[searchKey]
+    ? results[searchKey].hits
+    : [];
+  const updatedHits = [
+    ...oldHits,
+    ...hits
+  ]
+  return {
+    results: {
+      ...results,
+      [searchKey]: { hits: updatedHits, page}
+    },
+    isLoading: false
+  }
+}
 export default class extends Component {
   _isMounted = false
   constructor(props) {
@@ -40,22 +57,9 @@ export default class extends Component {
   }
   setSearchTopStories = (result) => {
     const { hits, page } = result;
-    const { searchKey, results } = this.state
-    const oldHits = results && results[searchKey]
-      ? results[searchKey].hits
-      : [];
-    const updatedHits = [
-      ...oldHits,
-      ...hits
-    ]
-    this.setState({
-      results: {
-        ...results,
-        [searchKey]: { hits: updatedHits, page}
-      },
-      isLoading: false
-    })
+    this.setState(updateSearchTopStoriesState(hits, page))
   }
+  const
   fetchSearchTopStories(searchTerm, page = 0) {
     this.setState({isLoading: true})
     axios(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}&${PARAM_PAGE}${page}&${PARAM_HPP}${DEFAULT_HPP}`)
